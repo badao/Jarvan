@@ -36,7 +36,7 @@ namespace Jarvan
             if (Player.ChampionName != "JarvanIV")
                 return;
 
-            Q = new Spell(SpellSlot.Q, 770);
+            Q = new Spell(SpellSlot.Q, 870);
             W = new Spell(SpellSlot.W,300);
             E = new Spell(SpellSlot.E,830);
             R = new Spell(SpellSlot.R,650);
@@ -245,15 +245,19 @@ namespace Jarvan
         {
             var t = Prediction.GetPrediction(target, 625).CastPosition;
             float x = target.MoveSpeed;
-            float y = x * 200 / 1000;
+            float y = x * 250 / 1000;
             var pos = target.Position;
             if (target.Distance(t) <= y)
+            {
+                pos = t;
+            }
+            if (target.Distance(t) > y)
             {
                 pos = target.Position.Extend(t, y);
             }
             float z = Player.Distance(pos);
-            var i = Player.Position.Extend(pos, z + 50);
-            if (Player.Mana >= (Q.Instance.ManaCost + E.Instance.ManaCost) && Player.Distance(i) <= Q.Range + 100)
+            var i = Player.Position.Extend(pos, z);
+            if ( Player.Distance(i) <= Q.Range)
             {
                 Q.Cast(i);
             }
@@ -314,15 +318,19 @@ namespace Jarvan
             {
                 var t = Prediction.GetPrediction(target, 625).CastPosition;
                 float x = target.MoveSpeed;
-                float y = x * 200 / 1000;
+                float y = x * 250 / 1000;
                 var pos = target.Position;
                 if (target.Distance(t) <= y)
+                {
+                    pos = t;
+                }
+                if (target.Distance(t) > y)
                 {
                     pos = target.Position.Extend(t, y);
                 }
                 float z = Player.Distance(pos);
-                var i = Player.Position.Extend(pos, z + 50);
-                if (Player.Mana >= (Q.Instance.ManaCost + E.Instance.ManaCost) && Player.Distance(i) <= Q.Range +100)
+                var i = Player.Position.Extend(pos, z);
+                if (Player.Mana >= (Q.Instance.ManaCost + E.Instance.ManaCost) && Player.Distance(i) <= Q.Range)
                 {
                     Q.Cast(i);
                 }
@@ -354,17 +362,41 @@ namespace Jarvan
 
                 var t = Prediction.GetPrediction(target, 625).CastPosition;
                 float x = target.MoveSpeed;
-                float y = x * 750 / 1000;
+                float y = x * 250 / 1000;
                 var pos = target.Position;
-                if (target.Distance(t) <= y)
+                if (target.Distance(t) <= 100)
                 {
-                    pos = target.Position.Extend(t, y);
+                    pos = t;
                 }
+            if (target.Distance(t) > 100)
+            {
+                float m = 250;
+                var n = target.Position.Extend(t, y);
+                float l = Player.Distance(n) * 1000 / 1450;
+                float k = x *500 / 1000;
+                pos = target.Position.Extend(t, k);
+            }
                 float z = Player.Distance(pos);
                 QE = Player.Position.Extend(pos, z + 75);
-                if(Player.Mana >= (Q.Instance.ManaCost + E.Instance.ManaCost) && Player.Distance(QE) <= E.Range && Q.IsReady())
+                if(Player.Mana >= (Q.Instance.ManaCost + E.Instance.ManaCost) && Player.Distance(QE) <= E.Range && Q.IsReady() && !QE.IsWall())
                 {
                     E.Cast(QE);
+                }
+                else if (Player.Mana >= (Q.Instance.ManaCost + E.Instance.ManaCost) && Q.IsReady() && !QE.IsWall())
+                {
+                    if (Player.Distance(QE) > E.Range)
+                    {
+                        int j = 74;
+
+                        for (int o = 1; o < j; o++)
+                        {
+                            var Ec = Player.Position.Extend(pos, z + o);
+                            if (Player.Distance(Ec) <= E.Range && E.IsReady())
+                            {
+                                E.Cast(Ec);
+                            }
+                        }
+                    }
                 }
             
         }
@@ -409,7 +441,7 @@ namespace Jarvan
             if (Player.Mana >= (Q.Instance.ManaCost + E.Instance.ManaCost))
             {
                 var x = Player.Position.Extend(Game.CursorPos, E.Range);
-                if (!x.IsWall())
+                if (!x.IsWall() && Q.IsReady())
                 {
                     E.Cast(x);
                 }
