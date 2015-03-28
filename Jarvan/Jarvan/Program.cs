@@ -75,7 +75,7 @@ namespace Jarvan
 
             //Drawing.OnDraw += Drawing_OnDraw;
 
-            Game.OnGameUpdate += Game_OnGameUpdate;
+            Game.OnUpdate += Game_OnGameUpdate;
             Obj_AI_Base.OnProcessSpellCast += OnCast;
 
             Game.PrintChat("Welcome to JarvanIV World");
